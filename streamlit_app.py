@@ -5,14 +5,14 @@ from bs4 import BeautifulSoup
 import re
 import io
 
-# Function to fetch company email
+# Function to fetch company email using DuckDuckGo search
 def fetch_company_email(company_name):
     search_query = f"{company_name} contact email"
-    google_search_url = f"https://www.google.com/search?q={search_query}"
+    duckduckgo_url = f"https://html.duckduckgo.com/html/?q={search_query}"
     headers = {"User-Agent": "Mozilla/5.0"}
 
     try:
-        response = requests.get(google_search_url, headers=headers)
+        response = requests.get(duckduckgo_url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
 
         # Extract potential emails using regex
