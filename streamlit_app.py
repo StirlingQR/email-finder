@@ -4,15 +4,21 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import io
+import time
 
-# Function to fetch company email using DuckDuckGo search
+# Function to fetch company email using Google Search
 def fetch_company_email(company_name):
-    search_query = f"{company_name} contact email"
-    duckduckgo_url = f"https://html.duckduckgo.com/html/?q={search_query}"
-    headers = {"User-Agent": "Mozilla/5.0"}
+    search_query = f"{company_name} company email"
+    google_url = f"https://www.google.com/search?q={search_query}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
 
     try:
-        response = requests.get(duckduckgo_url, headers=headers)
+        response = requests.get(google_url, headers=headers)
+        if response.status_code != 200:
+            return None  # Return None if the request fails
+
         soup = BeautifulSoup(response.text, "html.parser")
 
         # Extract potential emails using regex
@@ -52,8 +58,21 @@ if uploaded_file:
     else:
         st.write("Processing your data...")
         
+        # Initialize progress bar
+        progress_bar = st.progress(0)
+        results = []
+
         # Fetch emails for each company name in the CSV file
-        df["Email"] = df["Company"].apply(fetch_company_email)
+        for index, row in df.iterrows():
+            company_name = row["Company"]
+            email = fetch_company_email(company_name)
+            results.append(email)
+            progress_bar.progress((index + 1) / len(df))
+
+            # Add a delay to avoid being blocked by Google
+            time.sleep(2)
+
+        df["Email"] = results
         
         # Display results in a table format within Streamlit UI
         st.write("Results:")
