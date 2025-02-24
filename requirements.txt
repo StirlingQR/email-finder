@@ -3,4 +3,4 @@ pandas
 requests
 beautifulsoup4
 openpyxl
-Pillow
+Pillow==9.3.0
